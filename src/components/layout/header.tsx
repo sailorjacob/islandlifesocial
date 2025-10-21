@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Calendar, Grid3X3, Plus, User } from 'lucide-react'
+import { Calendar, Grid3X3 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -10,8 +10,6 @@ import { cn } from '@/lib/utils'
 const navigation = [
   { name: 'Calendar', href: '/', icon: Calendar },
   { name: 'Moodboard', href: '/moodboard', icon: Grid3X3 },
-  { name: 'Create', href: '/create', icon: Plus },
-  { name: 'Profile', href: '/profile', icon: User },
 ]
 
 export function Header() {
@@ -26,18 +24,16 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 overflow-hidden">
-              <Image
-                src="https://fezgwnozzqforwekquwc.supabase.co/storage/v1/object/public/images%202/transparentlogo.png"
-                alt="Island Life Logo"
-                width={24}
-                height={24}
-                className="object-contain"
-              />
-            </div>
-            <span className="text-xl font-bold text-gray-900">Island Life Social</span>
-          </Link>
+        <Link href="/" className="flex items-center space-x-3">
+          <Image
+            src="https://fezgwnozzqforwekquwc.supabase.co/storage/v1/object/public/images%202/transparentlogo.png"
+            alt="Island Life Logo"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
+          <span className="text-xl font-bold text-gray-900">Island Life Social</span>
+        </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
