@@ -39,9 +39,10 @@ export function ImageUpload({
       const previewUrl = URL.createObjectURL(file)
       setPreview(previewUrl)
 
-      // Try to upload to Supabase if configured
+      // Try to upload to Supabase if configured and client is available
       if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
-          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo') &&
+          supabase.storage) {
 
         try {
           const fileExt = file.name.split('.').pop()

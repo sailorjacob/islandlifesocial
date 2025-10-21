@@ -29,9 +29,10 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
     setIsSubmitting(true)
 
     try {
-      // Try to save to Supabase if configured
+      // Try to save to Supabase if configured and client is available
       if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
-          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo') &&
+          supabase.from) {
         const { error } = await supabase
           .from('posts')
           .insert({
