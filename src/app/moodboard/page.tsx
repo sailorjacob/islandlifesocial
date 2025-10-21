@@ -42,6 +42,7 @@ export default function MoodboardPage() {
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           onSuccess={handlePostCreated}
+          selectedDate={undefined}
         />
       </main>
     </div>

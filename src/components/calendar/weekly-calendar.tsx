@@ -5,12 +5,13 @@ import { formatDate, getDaysInWeek } from '@/lib/utils'
 import { DayColumn } from './day-column'
 import { CreatePostModal } from '@/components/posts/create-post-modal'
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function WeeklyCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>()
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   const days = getDaysInWeek(currentDate)
 
@@ -23,6 +24,11 @@ export function WeeklyCalendar() {
   const handleAddPost = (date?: Date) => {
     setSelectedDate(date)
     setIsCreateModalOpen(true)
+  }
+
+  const handlePostCreated = () => {
+    setIsCreateModalOpen(false)
+    setRefreshTrigger(prev => prev + 1)
   }
 
   return (
@@ -54,13 +60,6 @@ export function WeeklyCalendar() {
           </button>
         </div>
 
-        <button
-          onClick={() => handleAddPost()}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium transition-colors duration-200"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Post</span>
-        </button>
       </div>
 
       {/* Calendar Grid */}
@@ -72,7 +71,7 @@ export function WeeklyCalendar() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <DayColumn date={day} onAddPost={() => handleAddPost(day)} />
+            <DayColumn date={day} onAddPost={() => handleAddPost(day)} refreshTrigger={refreshTrigger} />
           </motion.div>
         ))}
       </div>
@@ -82,6 +81,7 @@ export function WeeklyCalendar() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         selectedDate={selectedDate}
+        onSuccess={handlePostCreated}
       />
     </div>
   )

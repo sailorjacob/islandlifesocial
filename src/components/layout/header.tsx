@@ -28,8 +28,8 @@ export function Header() {
           <Image
             src="https://fezgwnozzqforwekquwc.supabase.co/storage/v1/object/public/images%202/transparentlogo.png"
             alt="Island Life Logo"
-            width={40}
-            height={40}
+            width={60}
+            height={60}
             className="object-contain"
           />
           <span className="text-xl font-bold text-gray-900">Island Life Social</span>

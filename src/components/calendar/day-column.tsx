@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { PostCard } from './post-card'
 import { Plus } from 'lucide-react'
@@ -10,19 +10,16 @@ import type { Post } from '@/lib/supabase'
 interface DayColumnProps {
   date: Date
   onAddPost: () => void
+  refreshTrigger?: number
 }
 
-export function DayColumn({ date, onAddPost }: DayColumnProps) {
+export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
   const [posts, setPosts] = useState<Post[]>([])
   
   const isToday = new Date().toDateString() === date.toDateString()
   const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
 
-  useEffect(() => {
-    fetchPosts()
-  }, [date])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const startOfDay = new Date(date)
       startOfDay.setHours(0, 0, 0, 0)
@@ -42,7 +39,11 @@ export function DayColumn({ date, onAddPost }: DayColumnProps) {
       console.error('Error fetching posts:', error)
       setPosts([])
     }
-  }
+  }, [date])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [fetchPosts, refreshTrigger])
 
   return (
     <div className={`min-h-[400px] rounded-xl border transition-all duration-200 ${

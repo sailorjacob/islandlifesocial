@@ -29,6 +29,7 @@ export function MoodboardGrid({ refreshTrigger }: MoodboardGridProps = {}) {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
+        .is('scheduled_date', null)
         .order('created_at', { ascending: false })
 
       if (error) throw error
