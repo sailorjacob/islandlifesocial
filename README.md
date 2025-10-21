@@ -1,36 +1,239 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Island Life Social - Social Media Management Platform
 
-## Getting Started
+A modern social media post management and moodboarding application specifically designed for Island Life Hostel. Built with Next.js 15, TypeScript, Tailwind CSS, and Supabase.
 
-First, run the development server:
+## Features
+
+- **Weekly Calendar View**: Visual calendar showing posts organized by day
+- **Image Upload**: Drag & drop image upload with preview and validation
+- **Moodboard Grid**: Grid view for visual content organization
+- **Post Scheduling**: Schedule posts for specific dates and times
+- **Multi-Platform Support**: Instagram, Facebook, Twitter, and all platforms
+- **Modern UI/UX**: Clean light theme with smooth animations
+- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **Real-time Updates**: Live updates using Supabase real-time subscriptions
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm/yarn/pnpm
+- Supabase account
+- Vercel account (for deployment)
+
+### 1. Clone and Setup
+
+```bash
+git clone <your-repo-url>
+cd island-life-social
+npm install
+```
+
+### 2. Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# App Configuration
+NEXT_PUBLIC_APP_NAME="Island Life Social"
+NEXT_PUBLIC_APP_DESCRIPTION="Social Media Post Management for Island Life Hostel"
+```
+
+### 3. Supabase Setup
+
+1. **Create a new Supabase project** at [supabase.com](https://supabase.com)
+
+2. **Run the database schema**:
+   ```sql
+   -- Copy and paste the contents of supabase-schema.sql into your Supabase SQL editor
+   ```
+
+3. **Create a storage bucket**:
+   - Go to Storage → Buckets → Create new bucket
+   - Name: `post-images`
+   - Public bucket: ✅ Enabled
+
+4. **Enable Authentication**:
+   - Go to Authentication → Settings
+   - Enable Email authentication
+
+5. **Get your credentials**:
+   - Go to Settings → API
+   - Copy your Project URL and anon/public key
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see your app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+island-life-social/
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── api/            # API routes
+│   │   ├── globals.css     # Global styles
+│   │   ├── layout.tsx      # Root layout
+│   │   ├── page.tsx        # Home page (Calendar view)
+│   │   └── moodboard/      # Moodboard page
+│   ├── components/
+│   │   ├── calendar/       # Calendar-related components
+│   │   ├── layout/         # Layout components (Header, etc.)
+│   │   ├── moodboard/      # Moodboard components
+│   │   ├── posts/          # Post-related components
+│   │   ├── ui/            # Reusable UI components
+│   │   └── upload/         # File upload components
+│   └── lib/
+│       ├── supabase.ts     # Supabase client configuration
+│       └── utils.ts        # Utility functions
+├── supabase-schema.sql     # Database schema
+├── vercel.json            # Vercel deployment config
+└── README.md
+```
 
-## Learn More
+## Design Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Light Theme**: Clean, modern UI with subtle shadows and borders
+- **Smooth Animations**: Framer Motion animations throughout
+- **Responsive Grid**: Adaptive layout for all screen sizes
+- **Interactive Elements**: Hover effects and micro-interactions
+- **Typography**: Clean, readable fonts with proper hierarchy
+- **Color Scheme**: Professional blue accent color (#2e9bb8)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Components
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Weekly Calendar (`/`)
+- Visual weekly calendar with post organization
+- Drag & drop functionality for rescheduling
+- Color-coded days (today highlighted)
+- Quick post creation buttons
 
-## Deploy on Vercel
+### Moodboard Grid (`/moodboard`)
+- Grid and list view modes
+- Search and filter functionality
+- Visual post organization
+- Bulk actions and management
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Create Post Modal
+- Image upload with preview
+- Caption editor with character count
+- Platform selection
+- Scheduling options
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+### Vercel (Recommended)
+
+1. **Connect your repository** to Vercel
+2. **Set environment variables** in Vercel dashboard
+3. **Deploy automatically** on push to main branch
+
+### Manual Deployment
+
+```bash
+# Build the project
+npm run build
+
+# Start production server
+npm start
+```
+
+## Authentication
+
+The app uses Supabase Auth for user management:
+
+- Email/password authentication
+- Row Level Security (RLS) policies
+- Automatic profile creation on signup
+
+## Database Schema
+
+### Posts Table
+```sql
+- id: UUID (Primary Key)
+- caption: TEXT (Required)
+- image_url: TEXT (Optional)
+- scheduled_date: TIMESTAMP
+- status: ENUM (draft, scheduled, published)
+- platform: ENUM (instagram, facebook, twitter, all)
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+- user_id: UUID (Foreign Key)
+```
+
+### Profiles Table
+```sql
+- id: UUID (Primary Key, references auth.users)
+- email: TEXT
+- full_name: TEXT
+- avatar_url: TEXT
+- created_at: TIMESTAMP
+- updated_at: TIMESTAMP
+```
+
+## Development
+
+### Available Scripts
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
+```
+
+### Code Quality
+
+- **TypeScript**: Full type safety
+- **ESLint**: Code linting and formatting
+- **Prettier**: Code formatting (via ESLint)
+
+## Content Ideas
+
+The app comes pre-configured with content ideas for Island Life Hostel:
+
+- Sunset views from the hostel
+- Guest testimonials and experiences
+- Local beach activities and attractions
+- Behind-the-scenes hostel life
+- Special events and promotions
+- Island cuisine and food highlights
+
+## Mobile Support
+
+The app is fully responsive and optimized for:
+- Mobile phones (320px+)
+- Tablets (768px+)
+- Desktop (1024px+)
+- Large screens (1440px+)
+
+## Future Enhancements
+
+- [ ] Push notifications for scheduled posts
+- [ ] Analytics and engagement tracking
+- [ ] Team collaboration features
+- [ ] AI-powered caption suggestions
+- [ ] Hashtag optimization
+- [ ] Post performance insights
+
+## License
+
+This project is private and proprietary for Island Life Hostel.
+
+## Support
+
+For support and questions, please contact the development team.
+
+---
+
+Built for Island Life Hostel
