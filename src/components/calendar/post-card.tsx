@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Download, Copy, Share } from 'lucide-react'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -40,6 +40,69 @@ export function PostCard({ post, onDelete }: PostCardProps) {
     }
   }
 
+  const handleCopyCaption = async () => {
+    if (!post.caption) {
+      toast.error('No caption to copy')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(post.caption)
+      toast.success('Caption copied to clipboard!')
+    } catch (error) {
+      console.error('Error copying caption:', error)
+      toast.error('Failed to copy caption')
+    }
+  }
+
+  const handleDownload = async () => {
+    if (!post.image_url) {
+      toast.error('No image to download')
+      return
+    }
+
+    try {
+      const response = await fetch(post.image_url)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `island-life-post-${post.id}.${post.image_url.split('.').pop()}`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      toast.success('Download started!')
+    } catch (error) {
+      console.error('Error downloading image:', error)
+      toast.error('Failed to download image')
+    }
+  }
+
+  const handleShare = async () => {
+    if (!post.image_url) {
+      toast.error('No image to share')
+      return
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Island Life Post',
+          text: post.caption || 'Check out this post from Island Life Hostel',
+          url: post.image_url,
+        })
+      } else {
+        // Fallback: copy URL to clipboard
+        await navigator.clipboard.writeText(post.image_url)
+        toast.success('Image URL copied to clipboard!')
+      }
+    } catch (error) {
+      console.error('Error sharing:', error)
+      toast.error('Failed to share')
+    }
+  }
+
   return (
     <motion.div
       whileHover={{ y: -2 }}
@@ -67,16 +130,45 @@ export function PostCard({ post, onDelete }: PostCardProps) {
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           )}
-          {/* Overlay with Caption and Delete */}
+          {/* Overlay with Actions and Caption */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            {/* Delete Button */}
-            <button
-              onClick={handleDelete}
-              className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors"
-              title="Delete post"
-            >
-              <Trash2 className="h-3 w-3" />
-            </button>
+            {/* Action Buttons */}
+            <div className="absolute top-2 right-2 flex space-x-1">
+              {post.image_url && (
+                <>
+                  <button
+                    onClick={handleDownload}
+                    className="p-1.5 bg-gray-400 hover:bg-gray-500 rounded-full text-white transition-colors"
+                    title="Download image"
+                  >
+                    <Download className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="p-1.5 bg-gray-400 hover:bg-gray-500 rounded-full text-white transition-colors"
+                    title="Share image"
+                  >
+                    <Share className="h-3 w-3" />
+                  </button>
+                </>
+              )}
+              {post.caption && (
+                <button
+                  onClick={handleCopyCaption}
+                  className="p-1.5 bg-gray-400 hover:bg-gray-500 rounded-full text-white transition-colors"
+                  title="Copy caption"
+                >
+                  <Copy className="h-3 w-3" />
+                </button>
+              )}
+              <button
+                onClick={handleDelete}
+                className="p-1.5 bg-gray-400 hover:bg-gray-500 rounded-full text-white transition-colors"
+                title="Delete post"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            </div>
 
             {/* Caption */}
             {post.caption && (
@@ -94,7 +186,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
           {/* Delete Button for No Image */}
           <button
             onClick={handleDelete}
-            className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors opacity-0 group-hover:opacity-100"
+            className="absolute top-2 right-2 p-1.5 bg-gray-400 hover:bg-gray-500 rounded-full text-white transition-colors opacity-0 group-hover:opacity-100"
             title="Delete post"
           >
             <Trash2 className="h-3 w-3" />

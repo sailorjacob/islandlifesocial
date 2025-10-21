@@ -6,6 +6,25 @@ import { PostCard } from './post-card'
 import { Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Post } from '@/lib/supabase'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface DayColumnProps {
   date: Date
@@ -13,11 +32,42 @@ interface DayColumnProps {
   refreshTrigger?: number
 }
 
+// Sortable Post Card wrapper
+function SortablePostCard({ post, onDelete }: { post: Post; onDelete: () => void }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: post.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <PostCard post={post} onDelete={onDelete} />
+    </div>
+  )
+}
+
 export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
   const [posts, setPosts] = useState<Post[]>([])
   
   const isToday = new Date().toDateString() === date.toDateString()
   const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -44,6 +94,19 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
   useEffect(() => {
     fetchPosts()
   }, [fetchPosts, refreshTrigger])
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (active.id !== over?.id) {
+      setPosts((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id)
+        const newIndex = items.findIndex((item) => item.id === over?.id)
+
+        return arrayMove(items, oldIndex, newIndex)
+      })
+    }
+  }
 
   return (
     <div className={`min-h-[500px] rounded-xl border transition-all duration-200 ${
@@ -73,16 +136,21 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
 
       {/* Posts */}
       <div className="p-3 space-y-3">
-        {posts.map((post, index) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <PostCard post={post} onDelete={fetchPosts} />
-          </motion.div>
-        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={posts} strategy={verticalListSortingStrategy}>
+            {posts.map((post) => (
+              <SortablePostCard
+                key={post.id}
+                post={post}
+                onDelete={fetchPosts}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
 
         {/* Add Post Button */}
         <motion.button
