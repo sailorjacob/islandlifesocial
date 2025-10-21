@@ -12,6 +12,7 @@ A modern social media post management and moodboarding application specifically 
 - **Modern UI/UX**: Clean light theme with smooth animations
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile
 - **Real-time Updates**: Live updates using Supabase real-time subscriptions
+- **User Authentication**: Secure user management with Supabase Auth
 
 ## Quick Start
 
@@ -63,7 +64,16 @@ NEXT_PUBLIC_APP_DESCRIPTION="Social Media Post Management for Island Life Hostel
    - Go to Authentication → Settings
    - Enable Email authentication
 
-5. **Get your credentials**:
+5. **Set up storage policies** (run in SQL Editor):
+   ```sql
+   CREATE POLICY "Users can upload post images" ON storage.objects
+     FOR INSERT WITH CHECK (bucket_id = 'post-images' AND auth.role() = 'authenticated');
+
+   CREATE POLICY "Users can view post images" ON storage.objects
+     FOR SELECT USING (bucket_id = 'post-images');
+   ```
+
+6. **Get your credentials**:
    - Go to Settings → API
    - Copy your Project URL and anon/public key
 

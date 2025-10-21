@@ -53,13 +53,6 @@ export function ImageUpload({
         })
 
       if (error) {
-        if (error.message?.includes('Supabase not configured')) {
-          // For demo purposes, simulate successful upload with blank placeholder
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          onUploadComplete?.('') // Return blank to show placeholder functionality
-          toast.success('Image uploaded locally! (Supabase not configured - configure for cloud storage)')
-          return
-        }
         throw error
       }
 

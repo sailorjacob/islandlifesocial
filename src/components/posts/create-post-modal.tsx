@@ -34,11 +34,10 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      // For demo purposes, allow creating posts without authentication
-      // if (error && !error.message?.includes('Supabase not configured')) {
-      //   toast.error('Please log in to create posts')
-      //   return
-      // }
+      if (!user) {
+        toast.error('Please log in to create posts')
+        return
+      }
 
       const { error } = await supabase
         .from('posts')
@@ -48,18 +47,14 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
           platform,
           scheduled_date: selectedDate?.toISOString(),
           status: selectedDate ? 'scheduled' : 'draft',
-          user_id: user?.id || 'demo-user',
+          user_id: user.id,
         })
 
       if (error) {
-        if (error.message?.includes('Supabase not configured')) {
-          toast.success('Post saved locally! (Supabase not configured - configure for cloud storage)')
-        } else {
-          throw error
-        }
-      } else {
-        toast.success('Post created successfully!')
+        throw error
       }
+
+      toast.success('Post created successfully!')
       onClose()
       resetForm()
 

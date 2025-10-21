@@ -6,12 +6,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-// Check if Supabase is properly configured
-const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL &&
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-  !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('your-project-id') &&
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.includes('your-anon-key')
-
 const navigation = [
   { name: 'Calendar', href: '/', icon: Calendar },
   { name: 'Moodboard', href: '/moodboard', icon: Grid3X3 },
@@ -23,23 +17,11 @@ export function Header() {
   const pathname = usePathname()
 
   return (
-    <>
-      {/* Demo Banner */}
-      {!isSupabaseConfigured && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          className="bg-blue-500 text-white text-center py-2 px-4 text-sm"
-        >
-          <span className="font-medium">Demo Mode:</span> Configure Supabase in .env.local for full functionality
-        </motion.div>
-      )}
-
-      <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm"
-      >
+    <motion.header
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm"
+    >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -99,6 +81,5 @@ export function Header() {
         </div>
       </div>
     </motion.header>
-    </>
   )
 }
