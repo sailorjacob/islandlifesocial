@@ -1,7 +1,3 @@
-// For demo purposes - in production you'd use real Supabase credentials
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key'
-
 // Demo client for when Supabase isn't configured
 const demoClient = {
   from: () => ({
@@ -28,12 +24,14 @@ const demoClient = {
 }
 
 // Try to create real Supabase client if credentials are available
-let supabaseClient: any = null
-try {
-  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-      !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+let supabaseClient: ReturnType<typeof import('@supabase/supabase-js').createClient> | null = null
 
+// Only create client on client-side to avoid SSR issues
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+
+  try {
     // Dynamic import to avoid SSR issues
     import('@supabase/supabase-js').then(({ createClient }) => {
       supabaseClient = createClient(
@@ -47,10 +45,12 @@ try {
           }
         }
       )
+    }).catch(error => {
+      console.warn('Supabase client initialization failed:', error)
     })
+  } catch (error) {
+    console.warn('Supabase client initialization failed:', error)
   }
-} catch (error) {
-  console.warn('Supabase client initialization failed:', error)
 }
 
 export const supabase = supabaseClient || demoClient

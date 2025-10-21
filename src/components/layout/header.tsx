@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Calendar, Grid3X3, Plus, User } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
@@ -27,10 +28,12 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 overflow-hidden">
-              <img
+              <Image
                 src="https://fezgwnozzqforwekquwc.supabase.co/storage/v1/object/public/images%202/transparentlogo.png"
                 alt="Island Life Logo"
-                className="h-6 w-6 object-contain"
+                width={24}
+                height={24}
+                className="object-contain"
               />
             </div>
             <span className="text-xl font-bold text-gray-900">Island Life Social</span>
