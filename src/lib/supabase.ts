@@ -1,16 +1,16 @@
 // Demo client for when Supabase isn't configured
 const demoClient = {
-  from: () => ({
+  from: (table: string) => ({
     select: () => Promise.resolve({ data: [], error: null }),
     insert: (data: Record<string, unknown>) => {
-      console.log('Demo mode - would insert:', data)
+      console.log(`Demo mode - would insert into ${table}:`, data)
       return Promise.resolve({ data: { id: Date.now().toString() }, error: null })
     },
     update: () => Promise.resolve({ data: null, error: null }),
     delete: () => Promise.resolve({ data: null, error: null }),
   }),
   storage: {
-    from: () => ({
+    from: (bucket: string) => ({
       upload: () => Promise.resolve({ data: null, error: { message: 'Demo mode - configure Supabase for uploads' } }),
       getPublicUrl: () => ({ data: { publicUrl: '' } }),
     }),
