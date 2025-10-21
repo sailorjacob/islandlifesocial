@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Trash2, Download, Copy, Share } from 'lucide-react'
+import { Trash2, Download, Copy, Share, GripVertical } from 'lucide-react'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -16,9 +16,10 @@ interface PostCardProps {
     scheduled_date?: string
   }
   onDelete?: () => void
+  dragHandleProps?: Record<string, unknown> // For drag & drop functionality
 }
 
-export function PostCard({ post, onDelete }: PostCardProps) {
+export function PostCard({ post, onDelete, dragHandleProps }: PostCardProps) {
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation()
     if (!confirm('Are you sure you want to delete this post?')) {
@@ -136,6 +137,17 @@ export function PostCard({ post, onDelete }: PostCardProps) {
           )}
           {/* Overlay with Actions and Caption */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {/* Drag Handle */}
+            {dragHandleProps && (
+              <div 
+                {...dragHandleProps}
+                className="absolute top-2 left-2 p-1.5 bg-gray-400 hover:bg-gray-500 rounded-full text-white transition-colors cursor-grab active:cursor-grabbing"
+                title="Drag to reorder"
+              >
+                <GripVertical className="h-3 w-3" />
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="absolute top-2 right-2 flex space-x-1">
               {post.image_url && (

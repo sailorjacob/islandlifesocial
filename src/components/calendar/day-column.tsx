@@ -50,8 +50,8 @@ function SortablePostCard({ post, onDelete }: { post: Post; onDelete: () => void
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <PostCard post={post} onDelete={onDelete} />
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <PostCard post={post} onDelete={onDelete} dragHandleProps={listeners} />
     </div>
   )
 }
@@ -63,7 +63,11 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
   const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before starting drag
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
