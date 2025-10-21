@@ -10,7 +10,7 @@ const demoClient = {
     delete: () => Promise.resolve({ data: null, error: null }),
   }),
   storage: {
-    from: (bucket: string) => ({
+    from: () => ({
       upload: () => Promise.resolve({ data: null, error: { message: 'Demo mode - configure Supabase for uploads' } }),
       getPublicUrl: () => ({ data: { publicUrl: '' } }),
     }),

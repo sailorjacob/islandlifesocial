@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Upload, X, Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import Image from 'next/image'
 
