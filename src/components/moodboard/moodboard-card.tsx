@@ -43,6 +43,19 @@ export function MoodboardCard({ post, viewMode }: MoodboardCardProps) {
           {/* Content */}
           <div className="flex-1 p-4">
             <div className="flex flex-col">
+              {/* Scheduled Date - only show if exists */}
+              {post.scheduled_date && (
+                <div className="mb-2">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    📅 {new Date(post.scheduled_date).toLocaleDateString('en-US', { 
+                      weekday: 'short', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </span>
+                </div>
+              )}
+
               {/* Caption - only show if not empty */}
               {post.caption && (
                 <p className="text-sm text-gray-800 line-clamp-2 mb-2">
@@ -88,14 +101,28 @@ export function MoodboardCard({ post, viewMode }: MoodboardCardProps) {
 
 
 
-        {/* Caption Overlay - only show if caption exists */}
-        {post.caption && (
-          <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Content Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {/* Scheduled Date - only show if exists */}
+          {post.scheduled_date && (
+            <div className="mb-2">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-800">
+                📅 {new Date(post.scheduled_date).toLocaleDateString('en-US', { 
+                  weekday: 'short', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}
+              </span>
+            </div>
+          )}
+
+          {/* Caption - only show if exists */}
+          {post.caption && (
             <p className="text-sm text-white line-clamp-3">
               {post.caption}
             </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </motion.div>
   )

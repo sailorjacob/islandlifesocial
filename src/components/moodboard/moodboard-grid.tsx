@@ -26,10 +26,10 @@ export function MoodboardGrid({ refreshTrigger }: MoodboardGridProps = {}) {
 
   const fetchPosts = async () => {
     try {
+      // Fetch ALL posts - both calendar posts (with dates) and moodboard posts (without dates)
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .is('scheduled_date', null)
         .order('created_at', { ascending: false })
 
       if (error) throw error
