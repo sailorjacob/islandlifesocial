@@ -11,9 +11,10 @@ interface CreatePostModalProps {
   isOpen: boolean
   onClose: () => void
   selectedDate?: Date
+  onSuccess?: () => void
 }
 
-export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostModalProps) {
+export function CreatePostModal({ isOpen, onClose, selectedDate, onSuccess }: CreatePostModalProps) {
   const [caption, setCaption] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,25 +30,24 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
     setIsSubmitting(true)
 
     try {
-      // Try to save to Supabase if configured and client is available
-      if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
-          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo') &&
-          supabase.from) {
-        const { error } = await supabase
-          .from('posts')
-          .insert({
-            caption: caption.trim(),
-            image_url: imageUrl || null,
-            scheduled_date: selectedDate?.toISOString(),
-            status: 'draft',
-          })
+      const { error } = await supabase
+        .from('posts')
+        .insert({
+          caption: caption.trim(),
+          image_url: imageUrl || null,
+          scheduled_date: selectedDate?.toISOString(),
+          status: 'draft',
+        })
 
-        if (error) throw error
-      }
+      if (error) throw error
 
       toast.success('Post created successfully!')
-      onClose()
       resetForm()
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        onClose()
+      }
 
     } catch (error) {
       console.error('Error creating post:', error)
@@ -165,7 +165,7 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
                 className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting || !caption.trim()}
               >
-                {isSubmitting ? 'Creating...' : selectedDate ? 'Schedule Post' : 'Save Draft'}
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
             </div>
           </form>

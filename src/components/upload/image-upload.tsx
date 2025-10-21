@@ -39,43 +39,30 @@ export function ImageUpload({
       const previewUrl = URL.createObjectURL(file)
       setPreview(previewUrl)
 
-      // Try to upload to Supabase if configured and client is available
-      if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
-          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo') &&
-          supabase.storage) {
+      // Generate unique file path
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const filePath = `posts/${fileName}`
 
-        try {
-          const { error } = await supabase.storage
-            .from('post-images')
-            .upload()
+      // Upload to Supabase
+      const { error } = await supabase.storage
+        .from('post-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
 
-          if (error) {
-            console.error('Supabase storage error:', error)
-            throw new Error(`Upload failed: ${error.message}`)
-          }
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('post-images')
-            .getPublicUrl()
-
-          onUploadComplete?.(publicUrl)
-          toast.success('Image uploaded successfully!')
-        } catch (storageError) {
-          console.error('Storage error:', storageError)
-          // Fall back to demo mode if real upload fails
-          console.log('Falling back to demo mode due to storage error')
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const demoUrl = `demo-image-${Date.now()}.jpg`
-          onUploadComplete?.(demoUrl)
-          toast.success('Image ready! (Demo mode - Supabase upload failed)')
-        }
-      } else {
-        // Demo mode - simulate upload
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        const demoUrl = `demo-image-${Date.now()}.jpg`
-        onUploadComplete?.(demoUrl)
-        toast.success('Image ready! (Demo mode - configure Supabase for cloud storage)')
+      if (error) {
+        console.error('Supabase storage error:', error)
+        throw new Error(`Upload failed: ${error.message}`)
       }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(filePath)
+
+      onUploadComplete?.(publicUrl)
+      toast.success('Image uploaded successfully!')
 
     } catch (error) {
       console.error('Upload error:', error)

@@ -1,33 +1,15 @@
-// Demo client for when Supabase isn't configured
-const demoClient = {
-  from: (table: string) => ({
-    select: () => Promise.resolve({ data: [], error: null }),
-    insert: (data: Record<string, unknown>) => {
-      console.log(`Demo mode - would insert into ${table}:`, data)
-      return Promise.resolve({ data: { id: Date.now().toString() }, error: null })
-    },
-    update: () => Promise.resolve({ data: null, error: null }),
-    delete: () => Promise.resolve({ data: null, error: null }),
-  }),
-  storage: {
-    from: (bucket: string) => ({
-      upload: () => {
-        console.log(`Demo mode - would upload to ${bucket}`)
-        return Promise.resolve({ data: null, error: { message: 'Demo mode - configure Supabase for uploads' } })
-      },
-      getPublicUrl: () => ({ data: { publicUrl: '' } }),
-    }),
-  },
-  auth: {
-    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-    signUp: () => Promise.resolve({ data: null, error: null }),
-    signIn: () => Promise.resolve({ data: null, error: null }),
-    signOut: () => Promise.resolve({ data: null, error: null }),
-  },
-}
+import { createClient } from '@supabase/supabase-js'
 
-// Export the demo client as the default - real Supabase will be handled at runtime
-export const supabase = demoClient
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+})
 
 // Database Types
 export interface Post {

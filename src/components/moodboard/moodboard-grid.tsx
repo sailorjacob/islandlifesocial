@@ -1,29 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Filter, Grid3X3, List, Search, Calendar } from 'lucide-react'
 import { MoodboardCard } from './moodboard-card'
+import { supabase } from '@/lib/supabase'
+import type { Post } from '@/lib/supabase'
 
 type ViewMode = 'grid' | 'list'
 type FilterStatus = 'all' | 'draft' | 'scheduled' | 'published'
 
-export function MoodboardGrid() {
+interface MoodboardGridProps {
+  refreshTrigger?: number
+}
+
+export function MoodboardGrid({ refreshTrigger }: MoodboardGridProps = {}) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [posts, setPosts] = useState<Post[]>([])
 
-  // Mock data for demonstration - replace with real data fetching
-  const posts = [
-    {
-      id: '1',
-      caption: '',
-      image_url: '',
-      status: 'draft' as const,
-      platform: 'all' as const,
-      created_at: new Date().toISOString(),
-    },
-  ]
+  useEffect(() => {
+    fetchPosts()
+  }, [refreshTrigger])
+
+  const fetchPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setPosts(data || [])
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+      setPosts([])
+    }
+  }
 
   const filteredPosts = posts.filter(post => {
     const matchesStatus = filterStatus === 'all' || post.status === filterStatus

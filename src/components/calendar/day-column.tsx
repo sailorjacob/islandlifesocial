@@ -1,8 +1,11 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { PostCard } from './post-card'
 import { Plus } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import type { Post } from '@/lib/supabase'
 
 interface DayColumnProps {
   date: Date
@@ -10,19 +13,36 @@ interface DayColumnProps {
 }
 
 export function DayColumn({ date, onAddPost }: DayColumnProps) {
+  const [posts, setPosts] = useState<Post[]>([])
+  
   const isToday = new Date().toDateString() === date.toDateString()
   const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
 
-  // Mock data for demonstration - replace with real data fetching
-  const posts = [
-    {
-      id: '1',
-      caption: '',
-      image_url: '',
-      status: 'draft' as const,
-      platform: 'all' as const,
-    },
-  ]
+  useEffect(() => {
+    fetchPosts()
+  }, [date])
+
+  const fetchPosts = async () => {
+    try {
+      const startOfDay = new Date(date)
+      startOfDay.setHours(0, 0, 0, 0)
+      const endOfDay = new Date(date)
+      endOfDay.setHours(23, 59, 59, 999)
+
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .gte('scheduled_date', startOfDay.toISOString())
+        .lte('scheduled_date', endOfDay.toISOString())
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setPosts(data || [])
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+      setPosts([])
+    }
+  }
 
   return (
     <div className={`min-h-[400px] rounded-xl border transition-all duration-200 ${
