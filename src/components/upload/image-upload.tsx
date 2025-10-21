@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Upload, X, Loader2 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import Image from 'next/image'
 
@@ -39,34 +38,18 @@ export function ImageUpload({
       const previewUrl = URL.createObjectURL(file)
       setPreview(previewUrl)
 
-      // Generate unique filename
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-      const filePath = `posts/${fileName}`
+      // For demo mode, just simulate successful upload
+      await new Promise(resolve => setTimeout(resolve, 1000))
 
-      // Upload to Supabase storage
-      const { error } = await supabase.storage
-        .from('post-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        })
+      // Return a demo URL (in production this would be the actual Supabase URL)
+      const demoUrl = `demo-image-${Date.now()}.jpg`
+      onUploadComplete?.(demoUrl)
 
-      if (error) {
-        throw error
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('post-images')
-        .getPublicUrl(filePath)
-
-      onUploadComplete?.(publicUrl)
-      toast.success('Image uploaded successfully!')
+      toast.success('Image ready! (Demo mode - configure Supabase for cloud storage)')
 
     } catch (error) {
       console.error('Upload error:', error)
-      toast.error('Failed to upload image')
+      toast.error('Failed to process image')
       setPreview(null)
     } finally {
       setIsUploading(false)

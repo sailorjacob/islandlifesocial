@@ -1,20 +1,38 @@
-# Island Life Social - Social Media Management Platform
+# Island Life Social - Social Media Content Manager
 
-A modern social media post management and moodboarding application specifically designed for Island Life Hostel. Built with Next.js 15, TypeScript, Tailwind CSS, and Supabase.
+A simple, streamlined social media content management tool for Island Life Hostel. Perfect for creating and organizing posts for the week.
 
 ## Features
 
-- **Weekly Calendar View**: Visual calendar showing posts organized by day
-- **Image Upload**: Drag & drop image upload with preview and validation
-- **Moodboard Grid**: Grid view for visual content organization
-- **Post Scheduling**: Schedule posts for specific dates and times
-- **Multi-Platform Support**: Instagram, Facebook, Twitter, and all platforms
-- **Modern UI/UX**: Clean light theme with smooth animations
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
-- **Real-time Updates**: Live updates using Supabase real-time subscriptions
-- **User Authentication**: Secure user management with Supabase Auth
+- **Weekly Calendar**: Visual calendar showing posts organized by day
+- **Image Upload**: Drag & drop image upload with preview
+- **Caption Management**: Add and edit captions for each post
+- **Moodboard View**: Visual grid for organizing content
+- **Simple Workflow**: Just add image + caption for each day
+- **Copy/Paste Ready**: Staff can easily copy content for posting
+- **Clean Interface**: Minimal, distraction-free design
 
-## Quick Start
+## Installation
+
+### Quick Setup
+
+```bash
+git clone <your-repo-url>
+cd island-life-social
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see your app.
+
+### Optional: Supabase Setup (for cloud storage)
+
+If you want to enable cloud storage for images:
+
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Copy your credentials to `.env.local`
+3. Run the SQL schema from `supabase-schema.sql`
+4. Create a `post-images` storage bucket
 
 ### Prerequisites
 

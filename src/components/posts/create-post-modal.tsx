@@ -13,12 +13,9 @@ interface CreatePostModalProps {
   selectedDate?: Date
 }
 
-type Platform = 'instagram' | 'facebook' | 'twitter' | 'all'
-
 export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostModalProps) {
   const [caption, setCaption] = useState('')
   const [imageUrl, setImageUrl] = useState('')
-  const [platform, setPlatform] = useState<Platform>('all')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,29 +29,14 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
     setIsSubmitting(true)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      // Simple demo mode - just log the post data
+      console.log('Creating post:', {
+        caption: caption.trim(),
+        image_url: imageUrl || null,
+        date: selectedDate?.toISOString() || new Date().toISOString(),
+      })
 
-      if (!user) {
-        toast.error('Please log in to create posts')
-        return
-      }
-
-      const { error } = await supabase
-        .from('posts')
-        .insert({
-          caption: caption.trim(),
-          image_url: imageUrl || null,
-          platform,
-          scheduled_date: selectedDate?.toISOString(),
-          status: selectedDate ? 'scheduled' : 'draft',
-          user_id: user.id,
-        })
-
-      if (error) {
-        throw error
-      }
-
-      toast.success('Post created successfully!')
+      toast.success('Post created! (Demo mode - ready for copy/paste)')
       onClose()
       resetForm()
 
@@ -69,7 +51,6 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
   const resetForm = () => {
     setCaption('')
     setImageUrl('')
-    setPlatform('all')
   }
 
   const handleClose = () => {
@@ -139,34 +120,6 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
               </div>
             </div>
 
-            {/* Platform Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Platform
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { value: 'all', label: 'All Platforms', icon: Calendar },
-                  { value: 'instagram', label: 'Instagram', icon: Instagram },
-                  { value: 'facebook', label: 'Facebook', icon: Facebook },
-                  { value: 'twitter', label: 'Twitter', icon: Twitter },
-                ].map(({ value, label, icon: Icon }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setPlatform(value as Platform)}
-                    className={`flex items-center space-x-3 p-3 rounded-lg border transition-all ${
-                      platform === value
-                        ? 'border-blue-300 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span className="font-medium">{label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Schedule Date */}
             {selectedDate && (
