@@ -1,7 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Trash2 } from 'lucide-react'
 import Image from 'next/image'
+import { supabase } from '@/lib/supabase'
+import { toast } from 'sonner'
 
 interface MoodboardCardProps {
   post: {
@@ -14,9 +17,30 @@ interface MoodboardCardProps {
     created_at: string
   }
   viewMode: 'grid' | 'list'
+  onDelete?: () => void
 }
 
-export function MoodboardCard({ post, viewMode }: MoodboardCardProps) {
+export function MoodboardCard({ post, viewMode, onDelete }: MoodboardCardProps) {
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this post?')) {
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', post.id)
+
+      if (error) throw error
+
+      toast.success('Post deleted successfully!')
+      onDelete?.()
+    } catch (error) {
+      console.error('Error deleting post:', error)
+      toast.error('Failed to delete post')
+    }
+  }
   if (viewMode === 'list') {
     return (
       <motion.div
@@ -71,6 +95,17 @@ export function MoodboardCard({ post, viewMode }: MoodboardCardProps) {
               )}
             </div>
           </div>
+
+          {/* Delete Button for List View */}
+          <div className="p-4 border-l border-gray-100">
+            <button
+              onClick={handleDelete}
+              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              title="Delete post"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </motion.div>
     )
@@ -100,6 +135,15 @@ export function MoodboardCard({ post, viewMode }: MoodboardCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 
 
+
+        {/* Delete Button for Grid View */}
+        <button
+          onClick={handleDelete}
+          className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 rounded-full text-white transition-colors opacity-0 group-hover:opacity-100"
+          title="Delete post"
+        >
+          <Trash2 className="h-3 w-3" />
+        </button>
 
         {/* Content Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">

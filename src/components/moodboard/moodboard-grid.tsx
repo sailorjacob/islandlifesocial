@@ -92,7 +92,7 @@ export function MoodboardGrid({ refreshTrigger }: MoodboardGridProps = {}) {
               transition={{ delay: index * 0.1 }}
               layout
             >
-              <MoodboardCard post={post} viewMode={viewMode} />
+              <MoodboardCard post={post} viewMode={viewMode} onDelete={fetchPosts} />
             </motion.div>
           ))}
         </motion.div>

@@ -80,7 +80,7 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
           >
-            <PostCard post={post} />
+            <PostCard post={post} onDelete={fetchPosts} />
           </motion.div>
         ))}
 
