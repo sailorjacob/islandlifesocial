@@ -22,6 +22,7 @@ export interface Post {
   created_at: string
   updated_at: string
   user_id: string
+  position?: number // For drag & drop ordering
 }
 
 export interface Profile {

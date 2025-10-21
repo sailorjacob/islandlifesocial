@@ -29,7 +29,7 @@ export default function MoodboardPage() {
           
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-black hover:bg-gray-800 text-white rounded-lg transition-colors"
           >
             <Plus className="h-5 w-5" />
             <span>Add Post</span>

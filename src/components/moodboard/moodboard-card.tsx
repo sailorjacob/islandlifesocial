@@ -263,18 +263,18 @@ export function MoodboardCard({ post, viewMode, onDelete }: MoodboardCardProps) 
 
         {/* Content Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {/* Scheduled Date - only show if exists */}
-          {post.scheduled_date && (
-            <div className="mb-2">
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-800">
-                📅 {new Date(post.scheduled_date).toLocaleDateString('en-US', { 
-                  weekday: 'short', 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
-              </span>
-            </div>
-          )}
+                  {/* Scheduled Date - only show if exists */}
+                  {post.scheduled_date && (
+                    <div className="mb-2">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-800">
+                        {new Date(post.scheduled_date).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                  )}
 
           {/* Caption - only show if exists */}
           {post.caption && (

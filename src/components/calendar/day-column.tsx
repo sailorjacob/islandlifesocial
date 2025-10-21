@@ -81,6 +81,7 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
         .select('*')
         .gte('scheduled_date', startOfDay.toISOString())
         .lte('scheduled_date', endOfDay.toISOString())
+        .order('position', { ascending: true })
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -95,16 +96,36 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
     fetchPosts()
   }, [fetchPosts, refreshTrigger])
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
 
     if (active.id !== over?.id) {
       setPosts((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id)
         const newIndex = items.findIndex((item) => item.id === over?.id)
+        const newItems = arrayMove(items, oldIndex, newIndex)
 
-        return arrayMove(items, oldIndex, newIndex)
+        // Update positions in database
+        updatePositions(newItems)
+
+        return newItems
       })
+    }
+  }
+
+  const updatePositions = async (orderedPosts: Post[]) => {
+    try {
+      // Update each post with its new position
+      const updates = orderedPosts.map((post, index) => 
+        supabase
+          .from('posts')
+          .update({ position: index })
+          .eq('id', post.id)
+      )
+
+      await Promise.all(updates)
+    } catch (error) {
+      console.error('Error updating positions:', error)
     }
   }
 

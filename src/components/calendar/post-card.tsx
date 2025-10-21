@@ -19,7 +19,8 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onDelete }: PostCardProps) {
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!confirm('Are you sure you want to delete this post?')) {
       return
     }
@@ -40,7 +41,8 @@ export function PostCard({ post, onDelete }: PostCardProps) {
     }
   }
 
-  const handleCopyCaption = async () => {
+  const handleCopyCaption = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!post.caption) {
       toast.error('No caption to copy')
       return
@@ -55,7 +57,8 @@ export function PostCard({ post, onDelete }: PostCardProps) {
     }
   }
 
-  const handleDownload = async () => {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!post.image_url) {
       toast.error('No image to download')
       return
@@ -79,7 +82,8 @@ export function PostCard({ post, onDelete }: PostCardProps) {
     }
   }
 
-  const handleShare = async () => {
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!post.image_url) {
       toast.error('No image to share')
       return
