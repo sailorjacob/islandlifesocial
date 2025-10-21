@@ -26,8 +26,12 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500">
-              <span className="text-sm font-bold text-white">IL</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 overflow-hidden">
+              <img
+                src="https://fezgwnozzqforwekquwc.supabase.co/storage/v1/object/public/images%202/transparentlogo.png"
+                alt="Island Life Logo"
+                className="h-6 w-6 object-contain"
+              />
             </div>
             <span className="text-xl font-bold text-gray-900">Island Life Social</span>
           </Link>

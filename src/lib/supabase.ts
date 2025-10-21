@@ -4,8 +4,30 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key'
 
-// Simple demo client that doesn't require authentication
-export const supabase = {
+// Create Supabase client with demo fallbacks
+let supabaseClient: any = null
+
+// Only create real client if we have valid configuration
+if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+
+  const { createClient } = require('@supabase/supabase-js')
+  supabaseClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    }
+  )
+}
+
+// Demo client for when Supabase isn't configured
+const demoClient = {
   from: (table: string) => ({
     select: () => Promise.resolve({ data: [], error: null }),
     insert: (data: any) => {
@@ -28,6 +50,8 @@ export const supabase = {
     signOut: () => Promise.resolve({ data: null, error: null }),
   },
 }
+
+export const supabase = supabaseClient || demoClient
 
 // Database Types
 export interface Post {

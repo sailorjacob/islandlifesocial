@@ -43,31 +43,31 @@ CREATE POLICY "Users can update their own profile" ON profiles
 CREATE POLICY "Users can insert their own profile" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
--- Posts policies
-CREATE POLICY "Users can view their own posts" ON posts
-  FOR SELECT USING (auth.uid() = user_id);
+-- Posts policies - Allow public access for demo purposes
+CREATE POLICY "Anyone can view posts" ON posts
+  FOR SELECT USING (true);
 
-CREATE POLICY "Users can create posts" ON posts
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Anyone can create posts" ON posts
+  FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Users can update their own posts" ON posts
-  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can update posts" ON posts
+  FOR UPDATE USING (true);
 
-CREATE POLICY "Users can delete their own posts" ON posts
-  FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can delete posts" ON posts
+  FOR DELETE USING (true);
 
--- Storage policies for post images
-CREATE POLICY "Users can upload post images" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'post-images' AND auth.role() = 'authenticated');
+-- Storage policies for post images - Allow public access for demo
+CREATE POLICY "Anyone can upload post images" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'post-images');
 
-CREATE POLICY "Users can view post images" ON storage.objects
+CREATE POLICY "Anyone can view post images" ON storage.objects
   FOR SELECT USING (bucket_id = 'post-images');
 
-CREATE POLICY "Users can update their own post images" ON storage.objects
-  FOR UPDATE USING (bucket_id = 'post-images' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Anyone can update post images" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'post-images');
 
-CREATE POLICY "Users can delete their own post images" ON storage.objects
-  FOR DELETE USING (bucket_id = 'post-images' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Anyone can delete post images" ON storage.objects
+  FOR DELETE USING (bucket_id = 'post-images');
 
 -- Create function to automatically create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()

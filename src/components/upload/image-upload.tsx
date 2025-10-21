@@ -38,18 +38,40 @@ export function ImageUpload({
       const previewUrl = URL.createObjectURL(file)
       setPreview(previewUrl)
 
-      // For demo mode, just simulate successful upload
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Try to upload to Supabase if configured
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
+          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
 
-      // Return a demo URL (in production this would be the actual Supabase URL)
-      const demoUrl = `demo-image-${Date.now()}.jpg`
-      onUploadComplete?.(demoUrl)
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+        const filePath = `posts/${fileName}`
 
-      toast.success('Image ready! (Demo mode - configure Supabase for cloud storage)')
+        const { error } = await supabase.storage
+          .from('post-images')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          })
+
+        if (error) throw error
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('post-images')
+          .getPublicUrl(filePath)
+
+        onUploadComplete?.(publicUrl)
+        toast.success('Image uploaded successfully!')
+      } else {
+        // Demo mode - simulate upload
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        const demoUrl = `demo-image-${Date.now()}.jpg`
+        onUploadComplete?.(demoUrl)
+        toast.success('Image ready! (Demo mode - configure Supabase for cloud storage)')
+      }
 
     } catch (error) {
       console.error('Upload error:', error)
-      toast.error('Failed to process image')
+      toast.error('Failed to upload image')
       setPreview(null)
     } finally {
       setIsUploading(false)

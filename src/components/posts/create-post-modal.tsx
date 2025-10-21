@@ -29,14 +29,22 @@ export function CreatePostModal({ isOpen, onClose, selectedDate }: CreatePostMod
     setIsSubmitting(true)
 
     try {
-      // Simple demo mode - just log the post data
-      console.log('Creating post:', {
-        caption: caption.trim(),
-        image_url: imageUrl || null,
-        date: selectedDate?.toISOString() || new Date().toISOString(),
-      })
+      // Try to save to Supabase if configured
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
+          !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+        const { error } = await supabase
+          .from('posts')
+          .insert({
+            caption: caption.trim(),
+            image_url: imageUrl || null,
+            scheduled_date: selectedDate?.toISOString(),
+            status: 'draft',
+          })
 
-      toast.success('Post created! (Demo mode - ready for copy/paste)')
+        if (error) throw error
+      }
+
+      toast.success('Post created successfully!')
       onClose()
       resetForm()
 
