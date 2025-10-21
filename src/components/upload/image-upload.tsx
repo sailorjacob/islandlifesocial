@@ -17,10 +17,11 @@ interface ImageUploadProps {
 export function ImageUpload({
   onUploadComplete,
   className = '',
-  maxSize = 10
+  maxSize = 50
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
+  const [fileType, setFileType] = useState<'image' | 'video' | null>(null)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -35,9 +36,10 @@ export function ImageUpload({
     setIsUploading(true)
 
     try {
-      // Create preview
+      // Create preview and detect file type
       const previewUrl = URL.createObjectURL(file)
       setPreview(previewUrl)
+      setFileType(file.type.startsWith('video/') ? 'video' : 'image')
 
       // Generate unique file path
       const fileExt = file.name.split('.').pop()
@@ -76,10 +78,12 @@ export function ImageUpload({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
+      'video/*': ['.mp4', '.mov', '.avi', '.webm']
     },
     multiple: false,
-    disabled: isUploading
+    disabled: isUploading,
+    maxSize: 50 * 1024 * 1024 // 50MB limit
   })
 
   const removePreview = () => {
@@ -87,6 +91,7 @@ export function ImageUpload({
       URL.revokeObjectURL(preview)
     }
     setPreview(null)
+    setFileType(null)
   }
 
   return (
@@ -100,12 +105,22 @@ export function ImageUpload({
             className="relative group"
           >
             <div className="relative aspect-square w-full max-w-sm mx-auto rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm">
-              <Image
-                src={preview}
-                alt="Preview"
-                fill
-                className="object-cover"
-              />
+              {fileType === 'video' ? (
+                <video
+                  src={preview}
+                  className="w-full h-full object-cover"
+                  controls
+                  muted
+                  preload="metadata"
+                />
+              ) : (
+                <Image
+                  src={preview}
+                  alt="Preview"
+                  fill
+                  className="object-cover"
+                />
+              )}
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <button
                   onClick={removePreview}
@@ -141,13 +156,13 @@ export function ImageUpload({
                 <p className={`text-lg font-medium ${
                   isDragActive ? 'text-blue-600' : 'text-gray-800'
                 }`}>
-                  {isDragActive ? 'Drop your image here' : 'Upload an image'}
+                  {isDragActive ? 'Drop your file here' : 'Upload image or video'}
                 </p>
                 <p className="text-sm text-gray-600">
                   {isDragActive ? 'Release to upload' : 'Drag & drop or click to browse'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  JPG, PNG, WebP up to {maxSize}MB
+                  Images: JPG, PNG, WebP • Videos: MP4, MOV, WebM • Up to {maxSize}MB
                 </p>
               </div>
             </div>

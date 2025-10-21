@@ -45,15 +45,28 @@ export function PostCard({ post, onDelete }: PostCardProps) {
       whileHover={{ y: -2 }}
       className="bg-white rounded-lg border border-gray-200 overflow-hidden group shadow-sm hover:shadow-md transition-all duration-200"
     >
-      {/* Post Image - Much Bigger */}
+      {/* Post Media - Much Bigger */}
       {post.image_url ? (
         <div className="relative aspect-square overflow-hidden">
-          <Image
-            src={post.image_url}
-            alt="Post image"
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          {/* Check if it's a video file */}
+          {post.image_url.match(/\.(mp4|mov|avi|webm)$/i) ? (
+            <video
+              src={post.image_url}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              muted
+              loop
+              preload="metadata"
+              onMouseEnter={(e) => e.currentTarget.play()}
+              onMouseLeave={(e) => e.currentTarget.pause()}
+            />
+          ) : (
+            <Image
+              src={post.image_url}
+              alt="Post image"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          )}
           {/* Overlay with Caption and Delete */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             {/* Delete Button */}

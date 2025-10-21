@@ -48,18 +48,30 @@ export function MoodboardCard({ post, viewMode, onDelete }: MoodboardCardProps) 
         className="bg-white rounded-lg border border-gray-200 overflow-hidden group shadow-sm hover:shadow-md transition-shadow"
       >
         <div className="flex">
-          {/* Image */}
+          {/* Media */}
           <div className="relative w-32 h-24 flex-shrink-0">
             {post.image_url ? (
-              <Image
-                src={post.image_url}
-                alt="Post image"
-                fill
-                className="object-cover"
-              />
+              post.image_url.match(/\.(mp4|mov|avi|webm)$/i) ? (
+                <video
+                  src={post.image_url}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  preload="metadata"
+                  onMouseEnter={(e) => e.currentTarget.play()}
+                  onMouseLeave={(e) => e.currentTarget.pause()}
+                />
+              ) : (
+                <Image
+                  src={post.image_url}
+                  alt="Post image"
+                  fill
+                  className="object-cover"
+                />
+              )
             ) : (
               <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                <span className="text-gray-500 text-xs">No image</span>
+                <span className="text-gray-500 text-xs">No media</span>
               </div>
             )}
           </div>
@@ -116,18 +128,30 @@ export function MoodboardCard({ post, viewMode, onDelete }: MoodboardCardProps) 
       whileHover={{ y: -4, scale: 1.02 }}
       className="bg-white rounded-lg border border-gray-200 overflow-hidden group shadow-sm hover:shadow-lg transition-all duration-200"
     >
-      {/* Image */}
+      {/* Media */}
       <div className="relative aspect-square overflow-hidden">
         {post.image_url ? (
-          <Image
-            src={post.image_url}
-            alt="Post image"
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-200"
-          />
+          post.image_url.match(/\.(mp4|mov|avi|webm)$/i) ? (
+            <video
+              src={post.image_url}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              muted
+              loop
+              preload="metadata"
+              onMouseEnter={(e) => e.currentTarget.play()}
+              onMouseLeave={(e) => e.currentTarget.pause()}
+            />
+          ) : (
+            <Image
+              src={post.image_url}
+              alt="Post image"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-200"
+            />
+          )
         ) : (
           <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-            <span className="text-gray-500">No image</span>
+            <span className="text-gray-500">No media</span>
           </div>
         )}
 
