@@ -62,8 +62,8 @@ export function WeeklyCalendar() {
 
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-4">
+      {/* Calendar Grid - Mobile Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 sm:gap-4">
         {days.map((day, index) => (
           <motion.div
             key={day.toISOString()}

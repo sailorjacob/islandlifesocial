@@ -46,7 +46,7 @@ export function DayColumn({ date, onAddPost, refreshTrigger }: DayColumnProps) {
   }, [fetchPosts, refreshTrigger])
 
   return (
-    <div className={`min-h-[400px] rounded-xl border transition-all duration-200 ${
+    <div className={`min-h-[500px] rounded-xl border transition-all duration-200 ${
       isToday
         ? 'border-blue-300 bg-blue-50 shadow-sm'
         : isPast

@@ -21,18 +21,19 @@ export function Header() {
       animate={{ y: 0, opacity: 1 }}
       className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm"
     >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex h-14 sm:h-16 items-center justify-between">
           {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3">
+        <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
           <Image
             src="https://fezgwnozzqforwekquwc.supabase.co/storage/v1/object/public/images%202/transparentlogo.png"
             alt="Island Life Logo"
-            width={60}
-            height={60}
-            className="object-contain"
+            width={50}
+            height={50}
+            className="object-contain sm:w-[60px] sm:h-[60px]"
           />
-          <span className="text-xl font-bold text-gray-900">Island Life Social</span>
+          <span className="text-lg sm:text-xl font-bold text-gray-900 hidden sm:block">Island Life Social</span>
+          <span className="text-base font-bold text-gray-900 sm:hidden">Island Life</span>
         </Link>
 
           {/* Navigation */}
