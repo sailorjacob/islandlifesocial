@@ -42,25 +42,30 @@ export function ImageUpload({
       if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
           !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
 
-        const fileExt = file.name.split('.').pop()
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-        const filePath = `posts/${fileName}`
+        try {
+          const fileExt = file.name.split('.').pop()
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+          const filePath = `posts/${fileName}`
 
-        const { error } = await supabase.storage
-          .from('post-images')
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-          })
+          const { error } = await supabase.storage
+            .from('post-images')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            })
 
-        if (error) throw error
+          if (error) throw error
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('post-images')
-          .getPublicUrl(filePath)
+          const { data: { publicUrl } } = supabase.storage
+            .from('post-images')
+            .getPublicUrl(filePath)
 
-        onUploadComplete?.(publicUrl)
-        toast.success('Image uploaded successfully!')
+          onUploadComplete?.(publicUrl)
+          toast.success('Image uploaded successfully!')
+        } catch (storageError) {
+          console.error('Storage error:', storageError)
+          throw storageError
+        }
       } else {
         // Demo mode - simulate upload
         await new Promise(resolve => setTimeout(resolve, 1000))

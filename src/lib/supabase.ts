@@ -1,36 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
-
 // For demo purposes - in production you'd use real Supabase credentials
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key'
 
-// Create Supabase client with demo fallbacks
-let supabaseClient: any = null
-
-// Only create real client if we have valid configuration
-if (process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-    !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
-
-  const { createClient } = require('@supabase/supabase-js')
-  supabaseClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true
-      }
-    }
-  )
-}
-
 // Demo client for when Supabase isn't configured
 const demoClient = {
-  from: (table: string) => ({
+  from: () => ({
     select: () => Promise.resolve({ data: [], error: null }),
-    insert: (data: any) => {
+    insert: (data: Record<string, unknown>) => {
       console.log('Demo mode - would insert:', data)
       return Promise.resolve({ data: { id: Date.now().toString() }, error: null })
     },
@@ -49,6 +25,32 @@ const demoClient = {
     signIn: () => Promise.resolve({ data: null, error: null }),
     signOut: () => Promise.resolve({ data: null, error: null }),
   },
+}
+
+// Try to create real Supabase client if credentials are available
+let supabaseClient: any = null
+try {
+  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+      !process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('demo')) {
+
+    // Dynamic import to avoid SSR issues
+    import('@supabase/supabase-js').then(({ createClient }) => {
+      supabaseClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true
+          }
+        }
+      )
+    })
+  }
+} catch (error) {
+  console.warn('Supabase client initialization failed:', error)
 }
 
 export const supabase = supabaseClient || demoClient

@@ -57,6 +57,9 @@ CREATE POLICY "Anyone can delete posts" ON posts
   FOR DELETE USING (true);
 
 -- Storage policies for post images - Allow public access for demo
+-- First, enable RLS on storage.objects if not already enabled
+-- ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
 CREATE POLICY "Anyone can upload post images" ON storage.objects
   FOR INSERT WITH CHECK (bucket_id = 'post-images');
 

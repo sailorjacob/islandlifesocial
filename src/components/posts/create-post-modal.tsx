@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Calendar, Instagram, Facebook, Twitter } from 'lucide-react'
+import { X, Calendar } from 'lucide-react'
 import { ImageUpload } from '@/components/upload/image-upload'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
