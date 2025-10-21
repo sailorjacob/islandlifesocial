@@ -45,22 +45,15 @@ export function ImageUpload({
           supabase.storage) {
 
         try {
-          const fileExt = file.name.split('.').pop()
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-          const filePath = `posts/${fileName}`
-
           const { error } = await supabase.storage
             .from('post-images')
-            .upload(filePath, file, {
-              cacheControl: '3600',
-              upsert: false
-            })
+            .upload()
 
           if (error) throw error
 
           const { data: { publicUrl } } = supabase.storage
             .from('post-images')
-            .getPublicUrl(filePath)
+            .getPublicUrl()
 
           onUploadComplete?.(publicUrl)
           toast.success('Image uploaded successfully!')
